@@ -27,6 +27,8 @@ body {
   color: var(--color-navy-900);
   font-family: var(--font-sans);
   word-break: keep-all;
+  /* 한글은 단어 단위로 줄바꿈하되, 띄어쓰기 없는 긴 링크·숫자는 화면 끝에서 끊어서 넘치지 않게 */
+  overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -137,4 +139,10 @@ textarea.input {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* 그리드 칸이 안쪽 내용(예: 옆으로 넘기는 사진 줄) 폭만큼 멋대로 넓어져
+   페이지 전체가 화면 밖으로 밀리는 것을 막습니다. 넘치는 내용은 각자 안에서만 스크롤됩니다. */
+.grid > * {
+  min-width: 0;
 }
