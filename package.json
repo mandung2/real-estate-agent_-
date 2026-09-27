@@ -1,0 +1,27 @@
+{
+  "name": "jeonggyo-home",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "api": "wrangler pages dev dist --port 8788",
+    "build": "vite build",
+    "db:init": "wrangler d1 migrations apply jeonggyo-home-db --local",
+    "db:init:remote": "wrangler d1 migrations apply jeonggyo-home-db --remote",
+    "start": "npm run build && npm run db:init && wrangler pages dev dist --port 8788",
+    "deploy": "npm run build && wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.1",
+    "wrangler": "^4.141.0"
+  }
+}

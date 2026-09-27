@@ -1,0 +1,9 @@
+name = "jeonggyo-home"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jeonggyo-home-db"
+database_id = "985eec14-8cc8-4298-98b0-4418c0d4ec46"
+migrations_dir = "migrations"
