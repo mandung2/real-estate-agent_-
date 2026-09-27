@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { dateTime, telHref } from '../../lib/format'
@@ -9,22 +8,15 @@ import Icon from '../../components/icons'
 export default function Inquiries() {
   const { data, loading, error, setData, reload } = useApi('/inquiries')
 
-  // 문의함을 열면 모두 읽음 처리 → 메뉴의 N 표시가 사라집니다.
-  // 화면에 받아 온 목록은 그대로 두어, 방금 읽은 새 문의에는 이번에만 N이 보입니다.
-  const unreadUpto = Math.max(0, ...(data?.items || []).filter((q) => !q.is_read).map((q) => q.id))
-  useEffect(() => {
-    if (!unreadUpto) return
-    api
-      .post('/inquiries/read-all', { upto: unreadUpto })
-      .then(() => window.dispatchEvent(new Event('jh-inquiries-changed')))
-      .catch(() => {})
-  }, [unreadUpto])
+  // 메뉴의 N 표시 개수를 바로 다시 세도록 알림
+  const notify = () => window.dispatchEvent(new Event('jh-inquiries-changed'))
 
   const toggle = async (q) => {
     const prev = data.items
     setData({ ...data, items: prev.map((x) => (x.id === q.id ? { ...x, is_handled: x.is_handled ? 0 : 1 } : x)) })
     try {
       await api.put(`/inquiries/${q.id}`, { is_handled: !q.is_handled })
+      notify()
     } catch (e) {
       setData({ ...data, items: prev })
       toast(e.message, 'error')
@@ -41,6 +33,7 @@ export default function Inquiries() {
         listing_id: q.listing_id,
       })
       if (!q.is_handled) await api.put(`/inquiries/${q.id}`, { is_handled: true })
+      notify()
       toast('고객 목록에 추가했습니다.')
       reload()
     } catch (e) {
@@ -51,6 +44,7 @@ export default function Inquiries() {
   const remove = async (q) => {
     if (!window.confirm('이 문의를 삭제할까요?')) return
     await api.del(`/inquiries/${q.id}`).catch((e) => toast(e.message, 'error'))
+    notify()
     reload()
   }
 
@@ -67,7 +61,7 @@ export default function Inquiries() {
           {data.items.map((q) => (
             <Card key={q.id} className={`p-4 ${q.is_handled ? 'opacity-60' : 'border-l-4 border-l-gold-500'}`}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                {!q.is_read && <NBadge />}
+                {!q.is_handled && <NBadge />}
                 <span className="font-bold">{q.name}</span>
                 <a href={telHref(q.phone)} className="flex items-center gap-1 text-sm font-semibold text-navy-700 hover:text-gold-700">
                   <Icon name="phone" className="size-3.5" /> {q.phone}

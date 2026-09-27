@@ -159,7 +159,8 @@ export function Modal({ open, onClose, title, children, wide }) {
 }
 
 // ---- 안 읽은 문의 'N' 표시 ------------------------------------------------
-// 관리자일 때만 1분마다 확인하고, 창으로 돌아오거나 문의함을 열면 즉시 다시 셉니다.
+// 처리 완료 전인 문의 수. 관리자일 때만 1분마다 확인하고, 창으로 돌아오거나
+// 문의함에서 처리 완료·삭제하면 즉시 다시 셉니다.
 export function useUnreadInquiries(enabled) {
   const [count, setCount] = useState(0)
   useEffect(() => {
