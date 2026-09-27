@@ -1,6 +1,6 @@
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useSite } from '../site'
-import { Spinner } from './ui'
+import { Spinner, NBadge, useUnreadInquiries } from './ui'
 import Logo from './Logo'
 import Icon from './icons'
 
@@ -18,6 +18,8 @@ export default function AdminLayout() {
   const { admin, logout } = useSite()
   const location = useLocation()
   const navigate = useNavigate()
+  const unread = useUnreadInquiries(!!admin)
+  const badge = (n) => n.to === '/admin/inquiries' && unread > 0
 
   if (admin === null) return <Spinner label="로그인 확인 중…" />
   if (!admin) return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
@@ -43,6 +45,7 @@ export default function AdminLayout() {
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={linkCls}>
               <Icon name={n.icon} /> {n.label}
+              {badge(n) && <NBadge className="-ml-1" />}
             </NavLink>
           ))}
         </nav>
@@ -71,8 +74,9 @@ export default function AdminLayout() {
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-2">
           {NAV.map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end} className={(s) => linkCls(s) + ' shrink-0 !py-1.5'}>
+            <NavLink key={n.to} to={n.to} end={n.end} className={(s) => linkCls(s) + ' shrink-0 !gap-1 !py-1.5'}>
               {n.label}
+              {badge(n) && <NBadge />}
             </NavLink>
           ))}
         </nav>

@@ -157,3 +157,38 @@ export function Modal({ open, onClose, title, children, wide }) {
     </div>
   )
 }
+
+// ---- 안 읽은 문의 'N' 표시 ------------------------------------------------
+// 관리자일 때만 1분마다 확인하고, 창으로 돌아오거나 문의함을 열면 즉시 다시 셉니다.
+export function useUnreadInquiries(enabled) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!enabled) return setCount(0)
+    let alive = true
+    const load = () =>
+      api
+        .get('/inquiries/unread')
+        .then((d) => alive && setCount(d.unread))
+        .catch(() => {})
+    const onVisible = () => document.visibilityState === 'visible' && load()
+    load()
+    const timer = setInterval(load, 60000)
+    window.addEventListener('jh-inquiries-changed', load)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      alive = false
+      clearInterval(timer)
+      window.removeEventListener('jh-inquiries-changed', load)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [enabled])
+  return count
+}
+
+export function NBadge({ className = '' }) {
+  return (
+    <span className={`inline-grid size-[18px] shrink-0 place-items-center rounded-full bg-rose-500 text-[10px] font-black leading-none text-white ${className}`} aria-label="새 문의">
+      N
+    </span>
+  )
+}

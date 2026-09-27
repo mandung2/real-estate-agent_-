@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useSite } from '../site'
 import { telHref } from '../lib/format'
-import { Modal } from './ui'
+import { Modal, NBadge, useUnreadInquiries } from './ui'
 import LoginForm from './LoginForm'
 import Logo from './Logo'
 import Icon from './icons'
@@ -19,6 +19,7 @@ export default function PublicLayout() {
   const [loginOpen, setLoginOpen] = useState(false)
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const unread = useUnreadInquiries(!!admin)
   const phone = s.mobile || s.phone
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function PublicLayout() {
             )}
             <button onClick={openAdmin} className="btn btn-gold ml-2">
               {!admin && <Icon name="lock" className="size-3.5" />} 관리자
+              {unread > 0 && <NBadge />}
             </button>
           </nav>
           <button className="rounded-lg p-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-label="메뉴">
@@ -73,6 +75,7 @@ export default function PublicLayout() {
             )}
             <button onClick={openAdmin} className="btn btn-gold mt-2 w-full">
               {!admin && <Icon name="lock" className="size-3.5" />} 관리자 페이지
+              {unread > 0 && <NBadge />}
             </button>
           </nav>
         )}
