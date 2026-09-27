@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useSite } from '../site'
 import { telHref } from '../lib/format'
+import { Modal } from './ui'
+import LoginForm from './LoginForm'
 import Logo from './Logo'
 import Icon from './icons'
 
@@ -14,13 +16,18 @@ const NAV = [
 export default function PublicLayout() {
   const { settings: s, admin } = useSite()
   const [open, setOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const phone = s.mobile || s.phone
 
   useEffect(() => {
     setOpen(false)
     window.scrollTo(0, 0)
   }, [pathname])
+
+  // 로그인돼 있으면 바로 관리자 페이지로, 아니면 그 자리에서 로그인 팝업
+  const openAdmin = () => (admin ? navigate('/admin') : setLoginOpen(true))
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -44,11 +51,9 @@ export default function PublicLayout() {
                 <Icon name="phone" /> {phone}
               </a>
             )}
-            {admin && (
-              <Link to="/admin" className="btn btn-gold ml-2">
-                관리자
-              </Link>
-            )}
+            <button onClick={openAdmin} className="btn btn-gold ml-2">
+              {!admin && <Icon name="lock" className="size-3.5" />} 관리자
+            </button>
           </nav>
           <button className="rounded-lg p-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-label="메뉴">
             <Icon name={open ? 'x' : 'menu'} className="size-6" />
@@ -66,11 +71,9 @@ export default function PublicLayout() {
                 <Icon name="phone" /> 전화 상담 {phone}
               </a>
             )}
-            {admin && (
-              <Link to="/admin" className="btn btn-gold mt-2 w-full">
-                관리자 페이지
-              </Link>
-            )}
+            <button onClick={openAdmin} className="btn btn-gold mt-2 w-full">
+              {!admin && <Icon name="lock" className="size-3.5" />} 관리자 페이지
+            </button>
           </nav>
         )}
       </header>
@@ -105,12 +108,21 @@ export default function PublicLayout() {
           <div className="flex flex-col items-start gap-2 md:items-end">
             {s.hours && <p className="text-white/70">{s.hours}</p>}
             <p>© {new Date().getFullYear()} 정교한 우리집. All rights reserved.</p>
-            <Link to={admin ? '/admin' : '/admin/login'} className="inline-flex items-center gap-1 text-white/35 hover:text-gold-400">
+            <button onClick={openAdmin} className="inline-flex items-center gap-1 text-white/35 hover:text-gold-400">
               <Icon name="lock" className="size-3.5" /> 관리자
-            </Link>
+            </button>
           </div>
         </div>
       </footer>
+
+      <Modal open={loginOpen} onClose={() => setLoginOpen(false)} title="관리자 로그인">
+        <LoginForm
+          onSuccess={() => {
+            setLoginOpen(false)
+            navigate('/admin')
+          }}
+        />
+      </Modal>
     </div>
   )
 }
