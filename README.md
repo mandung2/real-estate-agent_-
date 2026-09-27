@@ -32,7 +32,7 @@ npm install
 npm start        # 빌드 + DB 준비 + 서버 실행 → http://localhost:8788
 ```
 
-- 로컬 관리자 계정은 `.dev.vars` 파일에 있습니다 (기본: `admin` / `change-me-1234`).
+- 처음 받았다면 `.dev.vars.example` 을 `.dev.vars` 로 복사하세요. 로컬 관리자 계정이 들어 있습니다 (기본: `admin` / `change-me-1234`).
 - 화면을 고치면서 개발할 때: 터미널 두 개에서 `npm run api`, `npm run dev` → http://localhost:5173
 
 ## 수정 후 다시 배포

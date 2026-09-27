@@ -1,0 +1,4 @@
+# 이 파일을 .dev.vars 로 복사해서 쓰세요 (로컬 개발용 관리자 계정)
+ADMIN_ID=admin
+ADMIN_PASSWORD=change-me-1234
+JWT_SECRET=local-dev-secret-please-change
