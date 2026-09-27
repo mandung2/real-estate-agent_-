@@ -66,12 +66,12 @@ export default function PostsAdmin() {
                 <Toggle checked={!!p.is_public} onChange={(v) => patch(p, { is_public: v ? 1 : 0 })} label={<span className="text-xs">공개</span>} />
                 <button
                   onClick={() => patch(p, { pinned: p.pinned ? 0 : 1 })}
-                  className={`rounded-md p-1.5 ${p.pinned ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
+                  className={`rounded-md p-2.5 sm:p-1.5 ${p.pinned ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
                   title="상단 고정"
                 >
                   <Icon name="pin" />
                 </button>
-                <button onClick={() => remove(p)} className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50" title="삭제">
+                <button onClick={() => remove(p)} className="rounded-md p-2.5 sm:p-1.5 text-rose-500 hover:bg-rose-50" title="삭제">
                   <Icon name="trash" />
                 </button>
               </div>

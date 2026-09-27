@@ -44,7 +44,7 @@ export function Toaster() {
     return () => window.removeEventListener('jh-toast', on)
   }, [])
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-5 z-[100] flex flex-col items-center gap-2 px-4">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--tabbar-h)+5rem)] z-[100] lg:bottom-5 flex flex-col items-center gap-2 px-4">
       {items.map((t) => (
         <div
           key={t.id}

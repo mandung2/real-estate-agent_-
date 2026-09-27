@@ -47,7 +47,7 @@ export default function Listings() {
         </form>
         <div className="flex items-center gap-3">
           <span className="w-14 shrink-0 text-xs font-bold text-navy-600">거래 유형</span>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto">
             <button className={chip(!deal) + ' shrink-0'} onClick={() => set('deal_type', '')}>
               전체
             </button>
@@ -60,7 +60,7 @@ export default function Listings() {
         </div>
         <div className="flex items-center gap-3">
           <span className="w-14 shrink-0 text-xs font-bold text-navy-600">매물 종류</span>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto">
             <button className={chip(!type) + ' shrink-0'} onClick={() => set('property_type', '')}>
               전체
             </button>

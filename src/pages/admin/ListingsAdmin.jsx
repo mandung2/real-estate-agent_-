@@ -226,16 +226,16 @@ export default function ListingsAdmin({ done = false }) {
                   {!done && (
                     <button
                       onClick={() => patch(l, { is_featured: l.is_featured ? 0 : 1 })}
-                      className={`rounded-md p-1.5 ${l.is_featured ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
+                      className={`rounded-md p-2.5 sm:p-1.5 ${l.is_featured ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
                       title="홈 화면 추천 매물"
                     >
                       <Icon name="star" className={`size-4 ${l.is_featured ? 'fill-current' : ''}`} />
                     </button>
                   )}
-                  <button onClick={() => duplicate(l)} className="rounded-md p-1.5 text-navy-600 hover:bg-slate-100" title="복제">
+                  <button onClick={() => duplicate(l)} className="rounded-md p-2.5 sm:p-1.5 text-navy-600 hover:bg-slate-100" title="복제">
                     <Icon name="copy" />
                   </button>
-                  <button onClick={() => remove(l)} className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50" title="삭제">
+                  <button onClick={() => remove(l)} className="rounded-md p-2.5 sm:p-1.5 text-rose-500 hover:bg-rose-50" title="삭제">
                     <Icon name="trash" />
                   </button>
                 </div>

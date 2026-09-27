@@ -107,3 +107,34 @@ textarea.input {
   background: #fef3f2;
 }
 }
+
+/* ---- 모바일 ---------------------------------------------------------------- */
+/* 아이폰은 16px 미만 입력칸을 누르면 화면을 확대하므로 휴대폰에서는 16px */
+@media (max-width: 639px) {
+  .input {
+    font-size: 16px;
+  }
+}
+
+/* 가로로 넘기는 버튼 줄의 스크롤바 숨김 (넘기기는 그대로 가능) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 아이폰 하단 홈 막대 영역만큼 여백 */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 휴대폰 하단에 고정되는 탭바/버튼 줄 높이 — 본문이 가려지지 않게 여백으로도 씀 */
+:root {
+  --tabbar-h: calc(4rem + env(safe-area-inset-bottom));
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}

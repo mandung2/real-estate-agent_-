@@ -93,7 +93,7 @@ export default function ListingDetail() {
             )}
           </div>
           {photos.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
               {photos.map((p, i) => (
                 <button
                   key={p.id}
@@ -138,7 +138,7 @@ export default function ListingDetail() {
           </dl>
 
           {phone && (
-            <a href={telHref(phone)} className="btn btn-primary w-full py-3 text-base">
+            <a href={telHref(phone)} className="btn btn-primary hidden w-full py-3 text-base md:flex">
               <Icon name="phone" /> 전화로 문의 {phone}
             </a>
           )}
@@ -152,12 +152,30 @@ export default function ListingDetail() {
             {l.description || '상세 설명은 문의 주시면 안내드리겠습니다.'}
           </div>
         </section>
-        <section>
+        <section id="inquiry" className="scroll-mt-20">
           <h2 className="mb-3 text-lg font-bold">이 매물 문의하기</h2>
           <div className="rounded-2xl border border-[#ebe6dc] bg-white p-5">
             <InquiryForm listingId={l.id} defaultMessage={`[${l.title}] 매물 문의드립니다.`} />
           </div>
         </section>
+      </div>
+
+      {/* 휴대폰: 화면 아래 고정 연락 버튼 */}
+      <div className="h-20 md:hidden" />
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-[#ebe6dc] bg-white/95 backdrop-blur md:hidden">
+        <div className="flex gap-2 px-4 py-2.5">
+          {phone && (
+            <a href={telHref(phone)} className="btn btn-primary flex-1 py-3 text-base">
+              <Icon name="phone" /> 전화 문의
+            </a>
+          )}
+          <button
+            onClick={() => document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' })}
+            className="btn btn-gold flex-1 py-3 text-base"
+          >
+            문의 남기기
+          </button>
+        </div>
       </div>
     </div>
   )

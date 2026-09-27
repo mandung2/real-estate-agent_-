@@ -62,7 +62,8 @@ export default function Dashboard() {
                     </span>
                     <span className="font-semibold">{cl.name}</span>
                     <span className="text-xs text-navy-600">{cl.client_type}</span>
-                    <span className="line-clamp-1 flex-1 text-xs text-navy-600">{cl.budget}</span>
+                    <span className="hidden flex-1 text-xs text-navy-600 sm:line-clamp-1">{cl.budget}</span>
+                    <span className="flex-1 sm:hidden" />
                     {cl.phone && (
                       <a href={telHref(cl.phone)} className="shrink-0 text-xs font-semibold text-navy-800 hover:text-gold-700">
                         {cl.phone}

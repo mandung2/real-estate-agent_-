@@ -359,17 +359,22 @@ export default function ListingEdit() {
             {isNew && pending.length > 0 && <p className="mt-2 text-xs text-navy-600">저장하면 사진이 함께 올라갑니다.</p>}
           </Section>
 
-          <div className="flex gap-2">
-            <button className="btn btn-primary flex-1 py-3" disabled={saving || uploading > 0}>
-              {saving ? '저장 중…' : isNew ? '등록하기' : '저장하기'}
-            </button>
-            {!isNew && (
-              <button type="button" onClick={remove} className="btn btn-danger py-3">
-                삭제
+          {/* 휴대폰에서는 하단 탭바 바로 위에 고정, PC에서는 오른쪽 칸 맨 아래 */}
+          <div className="fixed inset-x-0 bottom-[var(--tabbar-h)] z-20 border-t border-[#e7e2d8] bg-white/95 px-4 py-2.5 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            {dirty && <p className="mb-1.5 text-center text-xs font-semibold text-gold-700 lg:hidden">저장하지 않은 변경사항이 있습니다.</p>}
+            <div className="flex gap-2">
+              <button className="btn btn-primary flex-1 py-3" disabled={saving || uploading > 0}>
+                {saving ? '저장 중…' : isNew ? '등록하기' : '저장하기'}
               </button>
-            )}
+              {!isNew && (
+                <button type="button" onClick={remove} className="btn btn-danger py-3">
+                  삭제
+                </button>
+              )}
+            </div>
           </div>
-          {dirty && <p className="text-center text-xs font-semibold text-gold-700">저장하지 않은 변경사항이 있습니다.</p>}
+          {dirty && <p className="hidden text-center text-xs font-semibold text-gold-700 lg:block">저장하지 않은 변경사항이 있습니다.</p>}
+          <div className="h-20 lg:hidden" />
         </div>
       </div>
     </form>
