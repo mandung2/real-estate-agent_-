@@ -45,21 +45,31 @@ export default function Listings() {
           </div>
           <button className="btn btn-primary">검색</button>
         </form>
-        <div className="flex flex-wrap gap-2">
-          <button className={chip(!deal)} onClick={() => set('deal_type', '')}>
-            전체
-          </button>
-          {DEAL_TYPES.map((d) => (
-            <button key={d} className={chip(deal === d)} onClick={() => set('deal_type', d)}>
-              {d}
+        <div className="flex items-center gap-3">
+          <span className="w-14 shrink-0 text-xs font-bold text-navy-600">거래 유형</span>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button className={chip(!deal) + ' shrink-0'} onClick={() => set('deal_type', '')}>
+              전체
             </button>
-          ))}
-          <select className="input w-auto rounded-full py-2 font-semibold" value={type} onChange={(e) => set('property_type', e.target.value)}>
-            <option value="">모든 유형</option>
-            {PROPERTY_TYPES.map((t) => (
-              <option key={t}>{t}</option>
+            {DEAL_TYPES.map((d) => (
+              <button key={d} className={chip(deal === d) + ' shrink-0'} onClick={() => set('deal_type', d)}>
+                {d}
+              </button>
             ))}
-          </select>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="w-14 shrink-0 text-xs font-bold text-navy-600">매물 종류</span>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button className={chip(!type) + ' shrink-0'} onClick={() => set('property_type', '')}>
+              전체
+            </button>
+            {PROPERTY_TYPES.map((t) => (
+              <button key={t} className={chip(type === t) + ' shrink-0'} onClick={() => set('property_type', t)}>
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

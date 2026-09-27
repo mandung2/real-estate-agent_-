@@ -96,3 +96,10 @@ export const toBool = (v) => (v === true || v === 1 || v === '1' || v === 'true'
 export const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback);
 
 export const NOW = "datetime('now', '+9 hours')";
+
+// 관리자 데이터(비공개·거래완료·보류, 소유주 정보 등)는 로그인한 관리자가
+// 관리자 페이지에서 ?admin=1 로 요청할 때만 내려줍니다. 고객용 화면은 관리자가
+// 로그인한 브라우저로 봐도 항상 고객에게 보이는 그대로 보여야 하기 때문입니다.
+export async function isAdminView(request, env) {
+  return new URL(request.url).searchParams.get('admin') === '1' && (await isAdmin(request, env));
+}

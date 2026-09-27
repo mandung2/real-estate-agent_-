@@ -10,7 +10,8 @@ export async function onRequestGet({ request, env }) {
       `SELECT
         (SELECT COUNT(*) FROM listings WHERE status = '광고중') AS active,
         (SELECT COUNT(*) FROM listings WHERE status = '계약진행') AS in_contract,
-        (SELECT COUNT(*) FROM listings WHERE status = '거래완료' AND substr(updated_at, 1, 7) = ?) AS done_this_month,
+        (SELECT COUNT(*) FROM listings WHERE status = '거래완료' AND substr(completed_at, 1, 7) = ?) AS done_this_month,
+        (SELECT COUNT(*) FROM listings WHERE status = '거래완료') AS done_total,
         (SELECT COUNT(*) FROM listings WHERE is_public = 0) AS private_count,
         (SELECT COUNT(*) FROM listings) AS total,
         (SELECT COUNT(*) FROM inquiries WHERE is_handled = 0) AS open_inquiries,
@@ -30,7 +31,7 @@ export async function onRequestGet({ request, env }) {
     env.DB.prepare(
       `SELECT l.id, l.title, l.deal_type, l.property_type, l.status, l.price, l.monthly_rent, l.is_public, l.updated_at,
         (SELECT id FROM photos p WHERE p.listing_id = l.id ORDER BY sort_order, id LIMIT 1) AS cover_photo_id
-       FROM listings l ORDER BY l.updated_at DESC LIMIT 6`
+       FROM listings l WHERE l.status != '거래완료' ORDER BY l.updated_at DESC LIMIT 6`
     ),
   ]);
   return json({

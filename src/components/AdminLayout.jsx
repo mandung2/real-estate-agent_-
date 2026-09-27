@@ -7,6 +7,7 @@ import Icon from './icons'
 const NAV = [
   { to: '/admin', label: '대시보드', icon: 'dashboard', end: true },
   { to: '/admin/listings', label: '매물 관리', icon: 'building' },
+  { to: '/admin/completed', label: '거래완료', icon: 'check' },
   { to: '/admin/clients', label: '고객 관리', icon: 'users' },
   { to: '/admin/inquiries', label: '문의함', icon: 'inbox' },
   { to: '/admin/posts', label: '게시글', icon: 'doc' },

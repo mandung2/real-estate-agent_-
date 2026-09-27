@@ -4,7 +4,7 @@ import { useSite } from '../../site'
 import { useApi, Spinner } from '../../components/ui'
 import ListingCard from '../../components/ListingCard'
 import Icon from '../../components/icons'
-import { DEAL_TYPES } from '../../lib/constants'
+import { DEAL_TYPES, PROPERTY_ICONS } from '../../lib/constants'
 import { date } from '../../lib/format'
 
 export default function Home() {
@@ -65,6 +65,24 @@ export default function Home() {
               <img src="/logo-full.png" alt="정교한 우리집" className="h-56 object-contain" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 매물 종류 바로가기 */}
+      <section className="mx-auto max-w-6xl px-4 pt-10 sm:px-6">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3 lg:grid-cols-8">
+          {Object.keys(PROPERTY_ICONS).map((t) => (
+            <Link
+              key={t}
+              to={`/listings?property_type=${encodeURIComponent(t)}`}
+              className="group flex flex-col items-center gap-2 rounded-2xl border border-[#ebe6dc] bg-white px-1 py-4 transition hover:-translate-y-0.5 hover:border-gold-400 sm:py-6"
+            >
+              <span className="grid size-11 place-items-center rounded-xl bg-gold-100 text-gold-700 transition group-hover:bg-navy-900 group-hover:text-gold-400 sm:size-14">
+                <Icon name={PROPERTY_ICONS[t]} className="size-6 sm:size-7" strokeWidth={1.6} />
+              </span>
+              <span className="text-[13px] font-bold text-navy-800 sm:text-[15px]">{t}</span>
+            </Link>
+          ))}
         </div>
       </section>
 

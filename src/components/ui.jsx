@@ -86,12 +86,17 @@ export function Empty({ children }) {
   return <div className="rounded-xl border border-dashed border-[#d9d5cc] bg-white/60 px-4 py-14 text-center text-sm text-navy-600">{children}</div>
 }
 
-export function Field({ label, hint, children, className = '' }) {
+// error: 저장은 막지 않고 칸 아래에 빨간 경고만 띄웁니다.
+export function Field({ label, hint, error, children, className = '' }) {
   return (
     <label className={`block ${className}`}>
       <span className="mb-1.5 block text-[13px] font-semibold text-navy-800">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-navy-600/80">{hint}</span>}
+      {error ? (
+        <span className="mt-1 block text-xs font-semibold text-rose-600">{error}</span>
+      ) : (
+        hint && <span className="mt-1 block text-xs text-navy-600/80">{hint}</span>
+      )}
     </label>
   )
 }

@@ -9,7 +9,7 @@ import Icon from '../../components/icons'
 
 export default function PostsAdmin() {
   const [category, setCategory] = useState('')
-  const { data, loading, error, setData, reload } = useApi('/posts' + qs({ category }))
+  const { data, loading, error, setData, reload } = useApi('/posts' + qs({ admin: 1, category }))
 
   const patch = async (p, change) => {
     const prev = data.items

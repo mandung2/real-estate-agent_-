@@ -8,10 +8,11 @@ import { useApi, Spinner, ErrorBox, Empty, Toggle, toast } from '../../component
 import { PageHeader, Card } from '../../components/AdminLayout'
 import Icon from '../../components/icons'
 
-export default function ListingsAdmin() {
+// done=true 이면 거래완료 매물 페이지, 아니면 진행 중인 매물 관리 페이지
+export default function ListingsAdmin({ done = false }) {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
-  const status = params.get('status') || ''
+  const status = done ? '거래완료' : params.get('status') || ''
   const deal = params.get('deal_type') || ''
   const type = params.get('property_type') || ''
   const q = params.get('q') || ''
@@ -20,7 +21,7 @@ export default function ListingsAdmin() {
   useEffect(() => setText(q), [q])
 
   const { data, loading, error, setData, reload } = useApi(
-    '/listings' + qs({ status, deal_type: deal, property_type: type, q })
+    '/listings' + qs({ admin: 1, status, exclude_done: done ? '' : '1', deal_type: deal, property_type: type, q })
   )
 
   const items = useMemo(() => {
@@ -40,9 +41,13 @@ export default function ListingsAdmin() {
   // 목록에서 바로 상태/공개/추천 변경
   const patch = async (l, change) => {
     const prev = data.items
-    setData({ ...data, items: prev.map((x) => (x.id === l.id ? { ...x, ...change } : x)) })
+    // 거래완료로 바꾸거나(매물 관리) 거래완료에서 되돌리면(거래완료 페이지) 이 목록에서 빠집니다
+    const leaves = 'status' in change && (change.status === '거래완료') !== done
+    const next = leaves ? prev.filter((x) => x.id !== l.id) : prev.map((x) => (x.id === l.id ? { ...x, ...change } : x))
+    setData({ ...data, items: next })
     try {
       await api.put(`/listings/${l.id}`, { _patch: true, ...change })
+      if (leaves) toast(done ? `'${l.title}' 을(를) 매물 관리로 되돌렸습니다.` : `'${l.title}' 거래완료 — 고객 화면에서 숨기고 거래완료 페이지로 옮겼습니다.`)
     } catch (e) {
       setData({ ...data, items: prev })
       toast(e.message, 'error')
@@ -51,7 +56,7 @@ export default function ListingsAdmin() {
 
   const duplicate = async (l) => {
     try {
-      const { item } = await api.get(`/listings/${l.id}`)
+      const { item } = await api.get(`/listings/${l.id}?admin=1`)
       const { id } = await api.post('/listings', { ...item, title: item.title + ' (복사본)', is_public: 0, is_featured: 0 })
       toast('복사본을 만들었습니다. (사진은 복사되지 않아요)')
       navigate(`/admin/listings/${id}`)
@@ -72,7 +77,7 @@ export default function ListingsAdmin() {
   }
 
   const exportCsv = () =>
-    downloadCsv(`매물목록_${todayKST()}.csv`, [
+    downloadCsv(`${done ? '거래완료' : '매물목록'}_${todayKST()}.csv`, [
       { label: '번호', value: 'id' },
       { label: '제목', value: 'title' },
       { label: '거래', value: 'deal_type' },
@@ -81,7 +86,7 @@ export default function ListingsAdmin() {
       { label: '공개', value: (r) => (r.is_public ? '공개' : '비공개') },
       { label: '가격(만원)', value: 'price' },
       { label: '월세(만원)', value: 'monthly_rent' },
-      { label: '관리비(만원)', value: 'maintenance_fee' },
+      { label: '월 평균 관리비', value: 'maintenance' },
       { label: '공급면적㎡', value: 'area_supply' },
       { label: '전용면적㎡', value: 'area_exclusive' },
       { label: '층', value: 'floor' },
@@ -92,13 +97,17 @@ export default function ListingsAdmin() {
       { label: '메모', value: 'private_memo' },
       { label: '등록일', value: 'created_at' },
       { label: '수정일', value: 'updated_at' },
+      { label: '거래완료일', value: 'completed_at' },
     ], items)
 
   const selectCls = 'input w-auto py-2 text-sm'
 
   return (
     <>
-      <PageHeader title="매물 관리" desc="비공개 정보(상세주소·소유주·메모)는 관리자에게만 보입니다.">
+      <PageHeader
+        title={done ? '거래완료 매물' : '매물 관리'}
+        desc={done ? '거래가 끝난 매물 기록입니다. 고객 화면에는 보이지 않습니다. 상태를 바꾸면 매물 관리로 되돌아갑니다.' : '진행 중인 매물입니다. 상태를 거래완료로 바꾸면 고객 화면에서 바로 숨겨지고 거래완료 페이지로 옮겨집니다.'}
+      >
         <button onClick={exportCsv} className="btn btn-ghost" disabled={!items.length}>
           <Icon name="download" /> 엑셀(CSV)
         </button>
@@ -119,12 +128,14 @@ export default function ListingsAdmin() {
             <Icon name="search" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-navy-600" />
             <input className="input py-2 pl-9" value={text} onChange={(e) => setText(e.target.value)} placeholder="제목·주소·소유주·연락처·메모 검색" />
           </form>
-          <select className={selectCls} value={status} onChange={(e) => set('status', e.target.value)}>
-            <option value="">모든 상태</option>
-            {STATUSES.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
+          {!done && (
+            <select className={selectCls} value={status} onChange={(e) => set('status', e.target.value)}>
+              <option value="">모든 상태</option>
+              {STATUSES.filter((s) => s !== '거래완료').map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          )}
           <select className={selectCls} value={deal} onChange={(e) => set('deal_type', e.target.value)}>
             <option value="">모든 거래</option>
             {DEAL_TYPES.map((s) => (
@@ -150,10 +161,16 @@ export default function ListingsAdmin() {
         <Spinner />
       ) : !items.length ? (
         <Empty>
-          매물이 없습니다.{' '}
-          <Link to="/admin/listings/new" className="font-semibold text-gold-700 underline">
-            새 매물 등록
-          </Link>
+          {done ? (
+            '거래완료된 매물이 없습니다.'
+          ) : (
+            <>
+              매물이 없습니다.{' '}
+              <Link to="/admin/listings/new" className="font-semibold text-gold-700 underline">
+                새 매물 등록
+              </Link>
+            </>
+          )}
         </Empty>
       ) : (
         <>
@@ -162,7 +179,7 @@ export default function ListingsAdmin() {
           </p>
           <div className="space-y-2">
             {items.map((l) => (
-              <Card key={l.id} className={`flex flex-col gap-3 p-3 md:flex-row md:items-center ${l.status === '거래완료' ? 'opacity-70' : ''}`}>
+              <Card key={l.id} className="flex flex-col gap-3 p-3 md:flex-row md:items-center">
                 <Link to={`/admin/listings/${l.id}`} className="flex min-w-0 flex-1 items-center gap-3">
                   <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-gold-100">
                     {l.cover_photo_id ? (
@@ -185,7 +202,8 @@ export default function ListingsAdmin() {
                     </p>
                     <p className="line-clamp-1 text-xs text-navy-600">
                       {l.address_detail || l.address_public || '주소 미입력'}
-                      {l.owner_name && ` · ${l.owner_name}`} · 수정 {date(l.updated_at)}
+                      {l.owner_name && ` · ${l.owner_name}`}
+                      {done && l.completed_at ? <b className="text-navy-800"> · 거래완료 {date(l.completed_at)}</b> : ` · 수정 ${date(l.updated_at)}`}
                     </p>
                   </div>
                 </Link>
@@ -204,14 +222,16 @@ export default function ListingsAdmin() {
                       <option key={s}>{s}</option>
                     ))}
                   </select>
-                  <Toggle checked={!!l.is_public} onChange={(v) => patch(l, { is_public: v ? 1 : 0 })} label={<span className="text-xs">공개</span>} />
-                  <button
-                    onClick={() => patch(l, { is_featured: l.is_featured ? 0 : 1 })}
-                    className={`rounded-md p-1.5 ${l.is_featured ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
-                    title="홈 화면 추천 매물"
-                  >
-                    <Icon name="star" className={`size-4 ${l.is_featured ? 'fill-current' : ''}`} />
-                  </button>
+                  {!done && <Toggle checked={!!l.is_public} onChange={(v) => patch(l, { is_public: v ? 1 : 0 })} label={<span className="text-xs">공개</span>} />}
+                  {!done && (
+                    <button
+                      onClick={() => patch(l, { is_featured: l.is_featured ? 0 : 1 })}
+                      className={`rounded-md p-1.5 ${l.is_featured ? 'text-gold-600' : 'text-slate-300 hover:text-gold-500'}`}
+                      title="홈 화면 추천 매물"
+                    >
+                      <Icon name="star" className={`size-4 ${l.is_featured ? 'fill-current' : ''}`} />
+                    </button>
+                  )}
                   <button onClick={() => duplicate(l)} className="rounded-md p-1.5 text-navy-600 hover:bg-slate-100" title="복제">
                     <Icon name="copy" />
                   </button>

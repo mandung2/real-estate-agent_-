@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useSite } from '../../site'
 import { photoUrl } from '../../lib/api'
-import { priceLabel, won, pyeong, floorLabel, telHref } from '../../lib/format'
+import { priceLabel, pyeong, floorLabel, telHref } from '../../lib/format'
 import { DEAL_STYLE } from '../../lib/constants'
 import { useApi, Spinner, ErrorBox, StatusBadge } from '../../components/ui'
 import InquiryForm from '../../components/InquiryForm'
@@ -34,7 +34,7 @@ export default function ListingDetail() {
     ['거래 유형', l.deal_type],
     ['매물 종류', l.property_type],
     ['가격', priceLabel(l) + (l.price != null ? ' 만원' : '')],
-    ['관리비', l.maintenance_fee != null ? `${won(l.maintenance_fee)} 만원` : ''],
+    ['월 평균 관리비', l.maintenance],
     ['공급면적', l.area_supply ? `${l.area_supply}㎡ (${pyeong(l.area_supply)}평)` : ''],
     ['전용면적', l.area_exclusive ? `${l.area_exclusive}㎡ (${pyeong(l.area_exclusive)}평)` : ''],
     ['층', floorLabel(l)],

@@ -1,10 +1,10 @@
-import { json, readJson, isAdmin, unauthorized, notFound, NOW } from '../../_lib.js';
-import { listingValues, stripPrivate } from './_fields.js';
+import { json, readJson, isAdmin, isAdminView, unauthorized, notFound, NOW } from '../../_lib.js';
+import { listingValues, stripPrivate, isPubliclyVisible, COMPLETED_AT_SQL } from './_fields.js';
 
 export async function onRequestGet({ request, env, params }) {
-  const admin = await isAdmin(request, env);
+  const admin = await isAdminView(request, env);
   const row = await env.DB.prepare('SELECT * FROM listings WHERE id = ?').bind(params.id).first();
-  if (!row || (!admin && !row.is_public)) return notFound();
+  if (!row || (!admin && !isPubliclyVisible(row))) return notFound();
   const { results: photos } = await env.DB.prepare(
     'SELECT id, sort_order FROM photos WHERE listing_id = ? ORDER BY sort_order, id'
   ).bind(params.id).all();
@@ -20,8 +20,9 @@ export async function onRequestPut({ request, env, params }) {
     const sets = [];
     const args = [];
     if ('status' in body) {
-      sets.push('status = ?');
-      args.push(listingValues(body).status);
+      const status = listingValues(body).status;
+      sets.push('status = ?', COMPLETED_AT_SQL);
+      args.push(status, status);
     }
     for (const f of ['is_public', 'is_featured']) {
       if (f in body) {
@@ -36,8 +37,8 @@ export async function onRequestPut({ request, env, params }) {
 
   const v = listingValues(body);
   const res = await env.DB.prepare(
-    `UPDATE listings SET ${Object.keys(v).map((c) => `${c} = ?`).join(', ')}, updated_at = ${NOW} WHERE id = ?`
-  ).bind(...Object.values(v), params.id).run();
+    `UPDATE listings SET ${Object.keys(v).map((c) => `${c} = ?`).join(', ')}, ${COMPLETED_AT_SQL}, updated_at = ${NOW} WHERE id = ?`
+  ).bind(...Object.values(v), v.status, params.id).run();
   if (!res.meta.changes) return notFound();
   return json({ ok: true });
 }

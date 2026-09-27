@@ -1,12 +1,12 @@
-import { json, readJson, isAdmin, unauthorized, notFound, NOW } from '../../_lib.js';
+import { json, readJson, isAdmin, isAdminView, unauthorized, notFound, NOW } from '../../_lib.js';
 import { postValues } from './_fields.js';
 
 export async function onRequestGet({ request, env, params }) {
-  const admin = await isAdmin(request, env);
+  const admin = await isAdminView(request, env);
   const row = await env.DB.prepare('SELECT * FROM posts WHERE id = ?').bind(params.id).first();
   if (!row || (!admin && !row.is_public)) return notFound();
-  // 방문자가 볼 때만 조회수 증가
-  if (!admin && new URL(request.url).searchParams.has('view')) {
+  // 방문자가 볼 때만 조회수 증가 (관리자 본인의 조회는 제외)
+  if (!(await isAdmin(request, env)) && new URL(request.url).searchParams.has('view')) {
     await env.DB.prepare('UPDATE posts SET views = views + 1 WHERE id = ?').bind(params.id).run();
   }
   return json({ ok: true, item: row });

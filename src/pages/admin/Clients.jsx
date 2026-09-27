@@ -103,7 +103,7 @@ export default function Clients() {
   const [text, setText] = useState('')
   const [editing, setEditing] = useState(null)
   const { data, loading, error, reload } = useApi('/clients' + qs(filter))
-  const listings = useApi('/listings')
+  const listings = useApi('/listings?admin=1')
   const today = todayKST()
 
   // 대시보드의 '고객 추가' 버튼에서 넘어온 경우 바로 입력창 열기

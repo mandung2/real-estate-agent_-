@@ -10,9 +10,17 @@ import Icon from '../../components/icons'
 
 const EMPTY = {
   title: '', deal_type: '매매', property_type: '아파트', status: '광고중', is_public: 1, is_featured: 0,
-  price: '', monthly_rent: '', maintenance_fee: '', area_supply: '', area_exclusive: '',
+  price: '', monthly_rent: '', maintenance: '', area_supply: '', area_exclusive: '',
   rooms: '', bathrooms: '', floor: '', total_floors: '', direction: '', move_in: '', parking: '', built_year: '',
   address_public: '', description: '', address_detail: '', owner_name: '', owner_phone: '', private_memo: '',
+}
+
+// 해당 층이 숫자("12", "12층")일 때만 총 층수와 비교합니다. "저/중/고", "B1" 등은 검사하지 않습니다.
+function floorWarning(floor, total) {
+  const m = String(floor ?? '').trim().match(/^(\d+)\s*층?$/)
+  const t = Number(total)
+  if (!m || !t) return ''
+  return Number(m[1]) > t ? '해당 층수가 총 층수보다 높습니다. 다시 확인해보세요.' : ''
 }
 
 function Section({ title, desc, children, locked }) {
@@ -54,13 +62,13 @@ export default function ListingEdit() {
     }
     setLoading(true)
     api
-      .get(`/listings/${id}`)
+      .get(`/listings/${id}?admin=1`)
       .then(({ item }) => {
         const next = { ...EMPTY }
         for (const k of Object.keys(EMPTY)) next[k] = item[k] ?? ''
         setF(next)
         setPhotos(item.photos)
-        setMeta({ created_at: item.created_at, updated_at: item.updated_at })
+        setMeta({ created_at: item.created_at, updated_at: item.updated_at, completed_at: item.completed_at })
         setDirty(false)
       })
       .catch(setError)
@@ -179,12 +187,13 @@ export default function ListingEdit() {
     <form onSubmit={save}>
       <PageHeader
         title={isNew ? '매물 등록' : '매물 수정'}
-        desc={meta ? `등록 ${dateTime(meta.created_at)} · 최근 수정 ${dateTime(meta.updated_at)}` : '필수 항목은 제목뿐입니다. 나머지는 알고 있는 만큼만 채우세요.'}
+        desc={meta ? `등록 ${dateTime(meta.created_at)} · 최근 수정 ${dateTime(meta.updated_at)}${meta.completed_at ? ` · 거래완료 ${dateTime(meta.completed_at)}` : ''}` : '필수 항목은 제목뿐입니다. 나머지는 알고 있는 만큼만 채우세요.'}
       >
         <Link to="/admin/listings" className="btn btn-ghost">
           목록
         </Link>
-        {!isNew && (
+        {/* 고객에게 보이는 매물일 때만 (거래완료·보류·비공개는 고객 페이지에서 열리지 않음) */}
+        {!isNew && !!Number(f.is_public) && !['거래완료', '보류'].includes(f.status) && (
           <Link to={`/listings/${id}`} target="_blank" className="btn btn-ghost">
             <Icon name="external" /> 미리보기
           </Link>
@@ -207,7 +216,7 @@ export default function ListingEdit() {
             </div>
           </Section>
 
-          <Section title="가격" desc="만원 단위로 입력하세요. (3억 5천 → 35000)">
+          <Section title="가격" desc="매매가·보증금·월세는 만원 단위 숫자로 입력하세요. (3억 5천 → 35000)">
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label={`${priceLabelText} (만원)`} hint={f.price ? `= ${won(f.price)} 만원` : ''}>
                 {inp('price', { type: 'number', inputMode: 'numeric', min: 0 })}
@@ -217,7 +226,7 @@ export default function ListingEdit() {
                   {inp('monthly_rent', { type: 'number', inputMode: 'numeric', min: 0 })}
                 </Field>
               )}
-              <Field label="관리비 (만원)">{inp('maintenance_fee', { type: 'number', inputMode: 'decimal', min: 0, step: 'any' })}</Field>
+              <Field label="월 평균 관리비" className="sm:col-span-3">{inp('maintenance', { placeholder: '예) 약 15만원 (난방비 별도), 관리비 없음', maxLength: 100 })}</Field>
             </div>
           </Section>
 
@@ -231,7 +240,9 @@ export default function ListingEdit() {
               </Field>
               <Field label="방 개수">{inp('rooms', { type: 'number', min: 0 })}</Field>
               <Field label="욕실 개수">{inp('bathrooms', { type: 'number', min: 0 })}</Field>
-              <Field label="해당 층">{inp('floor', { placeholder: '예) 12, 저, 중, 고' })}</Field>
+              <Field label="해당 층" error={floorWarning(f.floor, f.total_floors)}>
+                {inp('floor', { placeholder: '예) 12, 저, 중, 고' })}
+              </Field>
               <Field label="총 층수">{inp('total_floors', { type: 'number', min: 0 })}</Field>
               <Field label="방향">
                 <Select value={f.direction} onChange={set('direction')} options={DIRECTIONS} placeholder="선택 안 함" />
@@ -292,7 +303,9 @@ export default function ListingEdit() {
               </Field>
               <div><Toggle checked={!!Number(f.is_public)} onChange={(v) => set('is_public')(v ? 1 : 0)} label="사이트에 공개" /></div>
               <div><Toggle checked={!!Number(f.is_featured)} onChange={(v) => set('is_featured')(v ? 1 : 0)} label="홈 화면 추천 매물" /></div>
-              {f.status === '보류' && <p className="text-xs text-navy-600">'보류' 상태는 공개 설정과 관계없이 고객에게 보이지 않습니다.</p>}
+              {(f.status === '보류' || f.status === '거래완료') && (
+                <p className="text-xs text-navy-600">'{f.status}' 상태는 공개 설정과 관계없이 고객에게 보이지 않습니다.{f.status === '거래완료' && ' 저장하면 거래완료 페이지로 옮겨집니다.'}</p>
+              )}
             </div>
           </Section>
 

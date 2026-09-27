@@ -1,8 +1,8 @@
-import { json, readJson, isAdmin, unauthorized } from '../../_lib.js';
+import { json, readJson, isAdmin, isAdminView, unauthorized } from '../../_lib.js';
 import { postValues } from './_fields.js';
 
 export async function onRequestGet({ request, env }) {
-  const admin = await isAdmin(request, env);
+  const admin = await isAdminView(request, env);
   const url = new URL(request.url);
   const where = [];
   const args = [];

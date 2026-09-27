@@ -21,7 +21,7 @@ export default function PostEdit() {
     if (isNew) return setF(EMPTY)
     setLoading(true)
     api
-      .get(`/posts/${id}`)
+      .get(`/posts/${id}?admin=1`)
       .then(({ item }) => setF({ category: item.category, title: item.title, body: item.body, is_public: item.is_public, pinned: item.pinned }))
       .catch(setError)
       .finally(() => setLoading(false))

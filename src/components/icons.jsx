@@ -2,6 +2,13 @@
 const paths = {
   home: <><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /><path d="M10 21v-6h4v6" /></>,
   building: <><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1" /></>,
+  apartment: <><rect x="3" y="8" width="8" height="13" rx="1" /><rect x="11" y="3" width="10" height="18" rx="1" /><path d="M14 7h1M17 7h1M14 11h1M17 11h1M14 15h1M17 15h1M6 12h2M6 16h2" /></>,
+  officetel: <><rect x="5" y="2" width="14" height="20" rx="1.5" /><path d="M9 6h6M9 10h6M9 14h6M10 22v-4h4v4" /></>,
+  store: <><path d="M3 9 4.5 4h15L21 9" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 11.5V21h14v-9.5M10 21v-5h4v5" /></>,
+  land: <><path d="m2 20 6-9 4 5 3-3 7 7z" /><circle cx="17" cy="6" r="2.5" /></>,
+  factory: <><path d="M2 21V11l6 3.5V11l6 3.5V5h4l1 16z" /><path d="M2 21h20M6 18h2M11 18h2" /></>,
+  bed: <><path d="M3 20v-9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9M3 16h18" /><path d="M7 9V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3" /></>,
+  briefcase: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M3 13h18" /></>,
   doc: <><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M8 13h8M8 17h5" /></>,
   users: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5" /></>,
   inbox: <><path d="M3 13h5l1.5 3h5L16 13h5" /><path d="M5.5 5h13L21 13v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z" /></>,

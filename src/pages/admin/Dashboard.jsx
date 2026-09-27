@@ -34,12 +34,12 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label="광고중 매물" value={c.active} to="/admin/listings?status=광고중" />
         <Stat label="계약 진행중" value={c.in_contract} to="/admin/listings?status=계약진행" />
-        <Stat label="이번 달 거래완료" value={c.done_this_month} to="/admin/listings?status=거래완료" />
+        <Stat label="이번 달 거래완료" value={c.done_this_month} to="/admin/completed" />
         <Stat label="비공개 매물" value={c.private_count} to="/admin/listings" />
         <Stat label="새 문의" value={c.open_inquiries} to="/admin/inquiries" accent />
         <Stat label="연락할 고객 (오늘까지)" value={c.due_contacts} to="/admin/clients" accent />
         <Stat label="진행중 고객" value={c.active_clients} to="/admin/clients" />
-        <Stat label="전체 매물" value={c.total} to="/admin/listings" />
+        <Stat label="누적 거래완료" value={c.done_total} to="/admin/completed" />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

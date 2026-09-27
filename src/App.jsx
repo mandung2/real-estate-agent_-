@@ -36,7 +36,8 @@ export default function App() {
         <Route path="admin/login" element={<Login />} />
         <Route path="admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="listings" element={<ListingsAdmin />} />
+          <Route path="listings" element={<ListingsAdmin key="active" />} />
+          <Route path="completed" element={<ListingsAdmin key="done" done />} />
           <Route path="listings/new" element={<ListingEdit />} />
           <Route path="listings/:id" element={<ListingEdit />} />
           <Route path="posts" element={<PostsAdmin />} />

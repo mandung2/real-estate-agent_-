@@ -1,4 +1,5 @@
 import { json, isAdmin, unauthorized, notFound } from '../../_lib.js';
+import { isPubliclyVisible } from '../listings/_fields.js';
 
 function decode(b64) {
   const bin = atob(b64);
@@ -12,17 +13,18 @@ function decode(b64) {
 export async function onRequestGet({ request, env, params }) {
   const thumb = new URL(request.url).searchParams.has('thumb');
   const row = await env.DB.prepare(
-    `SELECT p.mime, p.${thumb ? 'thumb' : 'data'} AS body, l.is_public
+    `SELECT p.mime, p.${thumb ? 'thumb' : 'data'} AS body, l.is_public, l.status
      FROM photos p JOIN listings l ON l.id = p.listing_id WHERE p.id = ?`
   ).bind(params.id).first();
-  if (!row || (!row.is_public && !(await isAdmin(request, env)))) {
+  const visible = row && isPubliclyVisible(row);
+  if (!row || (!visible && !(await isAdmin(request, env)))) {
     return new Response('Not found', { status: 404 });
   }
   return new Response(decode(row.body), {
     headers: {
       'Content-Type': row.mime,
-      // 사진 ID는 재사용되지 않으므로 공개 매물 사진은 오래 캐시해도 안전
-      'Cache-Control': row.is_public ? 'public, max-age=604800' : 'private, no-store',
+      // 거래완료·비공개로 바뀌면 곧바로 가려지도록 공개 사진도 캐시는 짧게(10분)
+      'Cache-Control': visible ? 'public, max-age=600' : 'private, no-store',
     },
   });
 }
