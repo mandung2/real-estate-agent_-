@@ -7,3 +7,8 @@ binding = "DB"
 database_name = "jeonggyo-home-db"
 database_id = "985eec14-8cc8-4298-98b0-4418c0d4ec46"
 migrations_dir = "migrations"
+
+# 매물 사진 원본·썸네일 저장소 (D1에는 R2 파일 경로만 저장)
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "jeonggyo-home-photos"

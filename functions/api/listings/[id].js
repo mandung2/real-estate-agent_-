@@ -45,6 +45,10 @@ export async function onRequestPut({ request, env, params }) {
 
 export async function onRequestDelete({ request, env, params }) {
   if (!(await isAdmin(request, env))) return unauthorized();
+  // R2에 있는 이 매물의 사진 파일도 함께 삭제
+  const { results: files } = await env.DB.prepare('SELECT r2_key, thumb_key FROM photos WHERE listing_id = ?').bind(params.id).all();
+  const keys = files.flatMap((f) => [f.r2_key, f.thumb_key]).filter(Boolean);
+  if (keys.length) await env.PHOTOS.delete(keys);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM photos WHERE listing_id = ?').bind(params.id),
     env.DB.prepare('UPDATE clients SET listing_id = NULL WHERE listing_id = ?').bind(params.id),
