@@ -93,7 +93,7 @@ export default function ListingDetail() {
             )}
           </div>
           {photos.length > 1 && (
-            <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
+            <div className="no-scrollbar -mx-1 mt-2 -mb-1 flex gap-2 overflow-x-auto p-1">
               {photos.map((p, i) => (
                 <button
                   key={p.id}

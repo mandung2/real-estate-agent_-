@@ -1,7 +1,7 @@
 import { toInt, toNum, toStr, toBool, pick } from '../../_lib.js';
 
 export const DEAL_TYPES = ['매매', '전세', '월세', '단기임대'];
-export const PROPERTY_TYPES = ['아파트', '오피스텔', '주택', '토지', '원룸', '상가', '사무실', '공장', '기타'];
+export const PROPERTY_TYPES = ['아파트', '오피스텔', '주택', '토지', '원룸', '상가', '사무실', '공장/창고', '기타'];
 export const STATUSES = ['광고중', '계약진행', '거래완료', '보류'];
 
 // 고객에게 절대 노출되면 안 되는 필드
